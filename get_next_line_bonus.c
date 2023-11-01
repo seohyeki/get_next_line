@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 20:35:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/01 23:14:39 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/01 23:52:52 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 //backup fd노드가 있는지 찾고 있으면 가져오고 없으면 새로하나 만들어두기
 static int	chk_backup(t_list **fdlst, t_data *data, int fd)
@@ -18,7 +18,8 @@ static int	chk_backup(t_list **fdlst, t_data *data, int fd)
 	t_list	*previous;
 	t_list  *new;
 
-  //백업된 fd가 있는지 찾기
+	previous = 0;
+	//백업된 fd가 있는지 찾기
 	while (*fdlst != 0)
 	{
 		if ((*fdlst)->fd == fd)//있으면 line에 strdup
@@ -34,7 +35,7 @@ static int	chk_backup(t_list **fdlst, t_data *data, int fd)
   	new = add_newnode(fd);
 	if (new == 0)
 		return (0);
-	if ((*fdlst) == 0) //아예 노드가 없을때 
+	if (previous == 0) //아예 노드가 없을때 
 		*fdlst = new;
 	else //다른 fd노드 있음
 		previous->next = new;
@@ -93,6 +94,11 @@ static int	save_backup(t_list **fdlst, t_data *data, int fd)
 				(*fdlst)->content = ft_strdup(&(data->line[data->pos]));
 				if ((*fdlst)->content == 0)
 					return (0);
+			}
+			else
+			{
+				data->line[data->pos] = '\0';
+				return (0);
 			}
 			data->line[data->pos] = '\0';
 			//data->line = ft_re_malloc(data->line, data->pos);//line 재할당 널가드는...
