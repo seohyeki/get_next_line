@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 20:35:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/01 23:14:39 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/02 00:02:48 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,11 @@ static int	save_backup(t_list **fdlst, t_data *data, int fd)
 				(*fdlst)->content = ft_strdup(&(data->line[data->pos]));
 				if ((*fdlst)->content == 0)
 					return (0);
+			}
+			else
+			{
+				data->line[data->pos] = '\0';
+				return (0);
 			}
 			data->line[data->pos] = '\0';
 			//data->line = ft_re_malloc(data->line, data->pos);//line 재할당 널가드는...
