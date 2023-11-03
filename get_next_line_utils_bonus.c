@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:05:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/01 23:20:30 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/04 06:38:45 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,16 @@ int	ft_find_nl(const char *s, t_data *data)
 char	*ft_strdup(const char *s1)
 {
 	int		i;
+	int		len;
 	char	*dest;
 
 	i = 0;
+	len = 0;
 	if (s1 == NULL)
-	{
-		dest = (char *)malloc(sizeof(char));
-		if (dest == NULL)
-			return (NULL);
-		dest[0] = '\0';
-		return (dest);	
-	}
-	dest = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		return (0);
+	while (s1[len] != '\0')
+		len++;
+	dest = (char *)malloc(sizeof(char) * (len + 1));
 	if (dest == 0)
 		return (NULL);
 	while (s1[i] != '\0')
@@ -53,7 +51,7 @@ char	*ft_strdup(const char *s1)
 	return (dest);
 }
 
-char	*ft_strcat(char *dest, const char *src)
+void	ft_strcat(char *dest, const char *src)
 {
 	int	i;
 	int	j;
@@ -69,7 +67,6 @@ char	*ft_strcat(char *dest, const char *src)
 		i++;
 	}
 	dest[i] = '\0';
-	return (dest);
 }
 
 char	*ft_re_malloc(char *origin, int size)
@@ -79,13 +76,13 @@ char	*ft_re_malloc(char *origin, int size)
 
 	new = (char *)malloc(sizeof(char) * (size + 1));
 	if (new == 0)
-  {
-    free(origin);
+	{
+		free(origin);
 		return (0);
-  }
-  new[size] = '\0';
+	}
+	new[size] = '\0';
 	i = 0;
-	while (origin[i] != '\0')
+	while (origin[i] != '\0' && i < size)
 	{
 		new[i] = origin[i];
 		i++;
@@ -95,15 +92,23 @@ char	*ft_re_malloc(char *origin, int size)
 	return (new);
 }
 
-t_list	*add_newnode(int fd)
+int	add_newnode(t_list **previous, t_list **fdlst, int fd, t_data *data)
 {
 	t_list	*newnode;
 
 	newnode = (t_list *)malloc(sizeof(t_list));
 	if (newnode == NULL)
-		return (NULL);
+		return (0);
 	newnode->fd = fd;
-	newnode->content = 0;
+	newnode->content[BUFFER_SIZE] = '\0';
 	newnode->next = 0;
-	return (newnode);
+	if (*fdlst == 0)
+		*fdlst = newnode;
+	else
+		(*previous)->next = newnode;
+	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (data->line == NULL)
+		return (0);
+	data->line[0] = '\0';
+	return (1);
 }
