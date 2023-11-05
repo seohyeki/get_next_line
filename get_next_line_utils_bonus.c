@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:05:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/04 06:38:45 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 09:47:10 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,10 @@ char	*ft_re_malloc(char *origin, int size)
 	int		i;
 
 	new = (char *)malloc(sizeof(char) * (size + 1));
-	if (new == 0)
+	if (new == NULL)
 	{
 		free(origin);
-		return (0);
+		return (NULL);
 	}
 	new[size] = '\0';
 	i = 0;
@@ -92,13 +92,17 @@ char	*ft_re_malloc(char *origin, int size)
 	return (new);
 }
 
-int	add_newnode(t_list **previous, t_list **fdlst, int fd, t_data *data)
+int	add_newnode(t_list **previous, t_list **fdlst, t_data *data, int fd)
 {
 	t_list	*newnode;
 
 	newnode = (t_list *)malloc(sizeof(t_list));
 	if (newnode == NULL)
+	{
+		free(data->buf);
+		free(data->line);
 		return (0);
+	}
 	newnode->fd = fd;
 	newnode->content[BUFFER_SIZE] = '\0';
 	newnode->next = 0;
@@ -106,9 +110,5 @@ int	add_newnode(t_list **previous, t_list **fdlst, int fd, t_data *data)
 		*fdlst = newnode;
 	else
 		(*previous)->next = newnode;
-	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (data->line == NULL)
-		return (0);
-	data->line[0] = '\0';
 	return (1);
 }
