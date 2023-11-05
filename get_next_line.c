@@ -6,17 +6,19 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 20:35:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/04 06:39:43 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:06:15 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void	free_fdnode(t_list **fdlst, int fd)
+static void	free_fdnode(t_list **fdlst, t_data *data, int fd)
 {
 	t_list	*curr;
 	t_list	*previous;
 
+	free(data->buf);
+	data->buf = 0;
 	if (*fdlst == 0)
 		return ;
 	curr = *fdlst;
@@ -44,31 +46,30 @@ static int	chk_backup(t_list **fdlst, t_data *data, int fd)
 	t_list	*previous;
 	t_list	*curr;
 
+	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (data->line == 0)
+		return (0);
+	data->line[0] = '\0';
 	curr = *fdlst;
 	while (curr != 0)
 	{
 		if (curr->fd == fd)
 		{
-			data->line = ft_strdup(curr->content);
-			if (data->line == 0)
-			{
-				free_fdnode(fdlst, fd);
-				return (0);
-			}
+			ft_strcat(data->line, curr->content);
 			return (1);
 		}
 		previous = curr;
 		curr = curr->next;
 	}
-	if (add_newnode(&previous, fdlst, fd, data) == 0)
+	if (add_newnode(&previous, fdlst, fd) == 0)
 	{
-		free_fdnode(fdlst, fd);
+		free(data->line);
 		return (0);
 	}
 	return (1);
 }
 
-static void	read_file(t_data *data, int fd)
+static int	read_file(t_data *data, int fd)
 {
 	int	n;
 
@@ -77,44 +78,46 @@ static void	read_file(t_data *data, int fd)
 	{
 		data->read_size = read(fd, data->buf, BUFFER_SIZE);
 		if (data->read_size <= 0)
-			return ;
+			return (0);
 		data->buf[data->read_size] = '\0';
 		if (data->len + data->read_size >= BUFFER_SIZE * n)
 		{
 			n *= 2;
 			data->line = ft_re_malloc(data->line, BUFFER_SIZE * n);
 			if (data->line == 0)
-				return ;
+				return (0);
 		}
 		ft_strcat(data->line, data->buf);
 	}
 	if (data->line[data->pos] == '\n')
 		data->pos++;
+	return (1);
 }
 
-static int	save_backup(t_list **fdlst, t_data *data, int fd)
+static void	save_backup(t_list **fdlst, t_data *data, int fd)
 {
-	t_list	*cur;
+	t_list	*curr;
 
-	cur = *fdlst;
-	while (cur != 0)
+	curr = *fdlst;
+	while (curr != 0)
 	{
-		if (cur->fd == fd)
+		if (curr->fd == fd)
 		{
-			cur->content[0] = '\0';
-			ft_strcat(cur->content, &(data->line[data->pos]));
+			curr->content[0] = '\0';
+			ft_strcat(curr->content, &(data->line[data->pos]));
 			data->line = ft_re_malloc(data->line, data->pos);
-			if (data->line == 0 || cur->content[0] == '\0')
-				return (0);
-			else
-				return (1);
+			if (data->line == NULL || curr->content[0] == '\0')
+			{
+				free_fdnode(fdlst, data, fd);
+				return ;
+			}
+			free(data->buf);
+			return ;
 		}
-		cur = cur->next;
+		curr = curr->next;
 	}
-	data->line = ft_re_malloc(data->line, data->pos);
-	if (data->line == 0)
-		return (0);
-	return (1);
+	free(data->buf);
+	return ;
 }
 
 char	*get_next_line(int fd)
@@ -127,18 +130,20 @@ char	*get_next_line(int fd)
 	data.buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (data.buf == NULL || chk_backup(&fdlst, &data, fd) == 0)
 	{
-		free_fdnode(&fdlst, fd);
+		free_fdnode(&fdlst, &data, fd);
 		return (NULL);
 	}
-	read_file(&data, fd);
-	free(data.buf);
-	if (save_backup(&fdlst, &data, fd) == 0)
-		free_fdnode(&fdlst, fd);
-	if ((data.read_size == -1 || data.line[0] == '\0') \
-		&& ft_find_nl(data.line, &data) == 0)
+	if (read_file(&data, fd) == 0)
 	{
+		free_fdnode(&fdlst, &data, fd);
+		if (data.read_size == 0 && data.line[0] != '\0')
+		{
+			data.line = ft_re_malloc(data.line, data.pos);
+			return (data.line);
+		}
 		free(data.line);
 		return (NULL);
 	}
+	save_backup(&fdlst, &data, fd);
 	return (data.line);
 }

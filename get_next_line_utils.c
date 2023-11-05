@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:05:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/04 06:39:26 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:06:28 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,10 @@ char	*ft_re_malloc(char *origin, int size)
 	int		i;
 
 	new = (char *)malloc(sizeof(char) * (size + 1));
-	if (new == 0)
+	if (new == NULL)
 	{
 		free(origin);
-		return (0);
+		return (NULL);
 	}
 	new[size] = '\0';
 	i = 0;
@@ -92,7 +92,7 @@ char	*ft_re_malloc(char *origin, int size)
 	return (new);
 }
 
-int	add_newnode(t_list **previous, t_list **fdlst, int fd, t_data *data)
+int	add_newnode(t_list **previous, t_list **fdlst, int fd)
 {
 	t_list	*newnode;
 
@@ -106,9 +106,5 @@ int	add_newnode(t_list **previous, t_list **fdlst, int fd, t_data *data)
 		*fdlst = newnode;
 	else
 		(*previous)->next = newnode;
-	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (data->line == NULL)
-		return (0);
-	data->line[0] = '\0';
 	return (1);
 }

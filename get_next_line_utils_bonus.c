@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:05:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/05 09:47:10 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:03:36 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,17 +92,13 @@ char	*ft_re_malloc(char *origin, int size)
 	return (new);
 }
 
-int	add_newnode(t_list **previous, t_list **fdlst, t_data *data, int fd)
+int	add_newnode(t_list **previous, t_list **fdlst, int fd)
 {
 	t_list	*newnode;
 
 	newnode = (t_list *)malloc(sizeof(t_list));
 	if (newnode == NULL)
-	{
-		free(data->buf);
-		free(data->line);
 		return (0);
-	}
 	newnode->fd = fd;
 	newnode->content[BUFFER_SIZE] = '\0';
 	newnode->next = 0;

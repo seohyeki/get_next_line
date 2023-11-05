@@ -6,13 +6,13 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 20:35:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/05 09:54:37 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:05:53 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-void	free_fdnode(t_list **fdlst, t_data *data, int fd) //25
+static void	free_fdnode(t_list **fdlst, t_data *data, int fd)
 {
 	t_list	*curr;
 	t_list	*previous;
@@ -41,17 +41,14 @@ void	free_fdnode(t_list **fdlst, t_data *data, int fd) //25
 	}
 }
 
-int	chk_backup(t_list **fdlst, t_data *data, int fd) //25
+static int	chk_backup(t_list **fdlst, t_data *data, int fd)
 {
 	t_list	*previous;
 	t_list	*curr;
 
 	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (data->line == 0)
-	{
-		free_fdnode(fdlst, data, fd);
 		return (0);
-	}
 	data->line[0] = '\0';
 	curr = *fdlst;
 	while (curr != 0)
@@ -64,12 +61,15 @@ int	chk_backup(t_list **fdlst, t_data *data, int fd) //25
 		previous = curr;
 		curr = curr->next;
 	}
-	if (add_newnode(&previous, fdlst, data, fd) == 0)
+	if (add_newnode(&previous, fdlst, fd) == 0)
+	{
+		free(data->line);
 		return (0);
+	}
 	return (1);
 }
 
-int	read_file(t_data *data, int fd) //21
+static int	read_file(t_data *data, int fd)
 {
 	int	n;
 
@@ -94,7 +94,7 @@ int	read_file(t_data *data, int fd) //21
 	return (1);
 }
 
-void	save_backup(t_list **fdlst, t_data *data, int fd) //23
+static void	save_backup(t_list **fdlst, t_data *data, int fd)
 {
 	t_list	*curr;
 
@@ -120,7 +120,7 @@ void	save_backup(t_list **fdlst, t_data *data, int fd) //23
 	return ;
 }
 
-char	*get_next_line(int fd) //26
+char	*get_next_line(int fd)
 {
 	static t_list	*fdlst;
 	t_data			data;
@@ -128,13 +128,11 @@ char	*get_next_line(int fd) //26
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	data.buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (data.buf == NULL)
+	if (data.buf == NULL || chk_backup(&fdlst, &data, fd) == 0)
 	{
 		free_fdnode(&fdlst, &data, fd);
 		return (NULL);
 	}
-	if (chk_backup(&fdlst, &data, fd) == 0)
-		return (NULL);
 	if (read_file(&data, fd) == 0)
 	{
 		free_fdnode(&fdlst, &data, fd);

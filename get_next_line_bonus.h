@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 16:22:18 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/05 10:29:06 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:03:35 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		ft_find_nl(const char *s, t_data *data);
 char	*ft_strdup(const char *s1);
 void	ft_strcat(char *dest, const char *src);
 char	*ft_re_malloc(char *origin, int size);
-int		add_newnode(t_list **previous, t_list **fdlst, t_data *data, int fd);
+int		add_newnode(t_list **previous, t_list **fdlst, int fd);
 char	*get_next_line(int fd);
 
 #endif
