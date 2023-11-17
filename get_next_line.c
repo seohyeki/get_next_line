@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 20:35:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/05 20:06:15 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/17 13:28:47 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ static void	free_fdnode(t_list **fdlst, t_data *data, int fd)
 	t_list	*previous;
 
 	free(data->buf);
-	data->buf = 0;
-	if (*fdlst == 0)
+	if (*fdlst == NULL)
 		return ;
 	curr = *fdlst;
 	if (curr->fd == fd)
@@ -28,7 +27,7 @@ static void	free_fdnode(t_list **fdlst, t_data *data, int fd)
 		free(curr);
 		return ;
 	}
-	while (curr != 0)
+	while (curr != NULL)
 	{
 		if (curr->fd == fd)
 		{
@@ -47,11 +46,11 @@ static int	chk_backup(t_list **fdlst, t_data *data, int fd)
 	t_list	*curr;
 
 	data->line = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (data->line == 0)
+	if (data->line == NULL)
 		return (0);
 	data->line[0] = '\0';
 	curr = *fdlst;
-	while (curr != 0)
+	while (curr != NULL)
 	{
 		if (curr->fd == fd)
 		{
@@ -71,7 +70,7 @@ static int	chk_backup(t_list **fdlst, t_data *data, int fd)
 
 static int	read_file(t_data *data, int fd)
 {
-	int	n;
+	size_t	n;
 
 	n = 1;
 	while (ft_find_nl(data->line, data) == 0)
@@ -84,7 +83,7 @@ static int	read_file(t_data *data, int fd)
 		{
 			n *= 2;
 			data->line = ft_re_malloc(data->line, BUFFER_SIZE * n);
-			if (data->line == 0)
+			if (data->line == NULL)
 				return (0);
 		}
 		ft_strcat(data->line, data->buf);
@@ -99,7 +98,7 @@ static void	save_backup(t_list **fdlst, t_data *data, int fd)
 	t_list	*curr;
 
 	curr = *fdlst;
-	while (curr != 0)
+	while (curr != NULL)
 	{
 		if (curr->fd == fd)
 		{

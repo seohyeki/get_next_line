@@ -6,7 +6,7 @@
 /*   By: seohyeki <seohyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:05:56 by seohyeki          #+#    #+#             */
-/*   Updated: 2023/11/05 20:06:28 by seohyeki         ###   ########.fr       */
+/*   Updated: 2023/11/17 12:24:15 by seohyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,34 +27,10 @@ int	ft_find_nl(const char *s, t_data *data)
 	return (0);
 }
 
-char	*ft_strdup(const char *s1)
-{
-	int		i;
-	int		len;
-	char	*dest;
-
-	i = 0;
-	len = 0;
-	if (s1 == NULL)
-		return (0);
-	while (s1[len] != '\0')
-		len++;
-	dest = (char *)malloc(sizeof(char) * (len + 1));
-	if (dest == 0)
-		return (NULL);
-	while (s1[i] != '\0')
-	{
-		dest[i] = s1[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
 void	ft_strcat(char *dest, const char *src)
 {
-	int	i;
-	int	j;
+	size_t	i;
+	size_t	j;
 
 	i = 0;
 	j = 0;
@@ -69,10 +45,10 @@ void	ft_strcat(char *dest, const char *src)
 	dest[i] = '\0';
 }
 
-char	*ft_re_malloc(char *origin, int size)
+char	*ft_re_malloc(char *origin, size_t size)
 {
 	char	*new;
-	int		i;
+	size_t	i;
 
 	new = (char *)malloc(sizeof(char) * (size + 1));
 	if (new == NULL)
@@ -102,7 +78,7 @@ int	add_newnode(t_list **previous, t_list **fdlst, int fd)
 	newnode->fd = fd;
 	newnode->content[BUFFER_SIZE] = '\0';
 	newnode->next = 0;
-	if (*fdlst == 0)
+	if (*fdlst == NULL)
 		*fdlst = newnode;
 	else
 		(*previous)->next = newnode;
